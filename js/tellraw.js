@@ -31,10 +31,6 @@ var topPage = 1;
 var embed = false;
 var quill = undefined;
 
-function alert(message) {
-	return swal(message);
-}
-
 function reportAnIssue(ptitle) {
 	var title = "";
 	var body = "";
@@ -355,8 +351,9 @@ function clearJObjectSaves() {
 	});
 }
 function obfuscationPreviewHandler() {
-	$('.jsonPreviewObfuscated').html(setObfuscatedString($('.jsonPreviewObfuscated').html()));
-	if ($('.jsonPreviewObfuscated').length > 0) {
+	return
+	$('obfuscated').html(setObfuscatedString($('obfuscated').html()));
+	if ($('obfuscated').length > 0) {
 		setTimeout(obfuscationPreviewHandler, 20);
 	}
 }
@@ -944,7 +941,10 @@ function initialize() {
 		localStorage.setItem('langCode','en_US');
 	}
 
-	quill = new Quill('#editor');
+	quill = new Quill('#editor', {
+		formats: ['bold', 'italic', 'underline', 'strike', 'color']
+	});
+	quill.addFormat('lol', { tag: 'LOL', prepare: 'lol' });
 	quill.addModule('toolbar', { container: '#toolbar' });
 
 	if (localStorage.getItem('jformat') != version && localStorage.getItem('jformat') != undefined) {
@@ -1293,6 +1293,18 @@ localStorage.setItem('donateAlert','shown');
 		} else {
 			showView('tellraw');
 			reportAnIssue();
+		}
+	});
+	
+	//
+
+	$('.ql-custom-obfuscated').on('click',function(){
+		var range = quill.getSelection();
+		alert(JSON.stringify(quill.getSelection()));
+		if (range) {
+			quill.formatText(range.start, range.end, 'lol', true);
+		} else {
+			console.log('User cursor is not in editor');
 		}
 	});
 
