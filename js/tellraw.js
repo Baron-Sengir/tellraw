@@ -29,6 +29,7 @@ var issueLog = [];
 var bookPage = 1;
 var topPage = 1;
 var embed = false;
+var quill = undefined;
 
 function alert(message) {
 	return swal(message);
@@ -170,7 +171,6 @@ function formatJObjectList(data) {
 			currentDataToPlug.push(data[i]);
 		}
 	}
-	console.log(data);
 	if (!data[data.length - 1].NEW_ITERATE_FLAG) {
 		ret_val.push(JSON.stringify(currentDataToPlug));
 	}
@@ -384,10 +384,6 @@ function removeWhiteSpace(s) {
 	return s;
 	//BROKEN return s.replace(/ /g, '');
 }
-function deleteIndex(index) {
-	jobject.splice(index, 1);
-	refreshOutput();
-}
 function moveUp(index) {
 	jobject.splice(index+1, 0, jobject.splice(index, 1)[0]);
 	refreshOutput();
@@ -407,238 +403,6 @@ function getSelectedIndex(object) {
 function getChecked(id) {
 	return document.getElementById(id).checked;
 }
-function clearExtra() {
-	$('#fmtExtraRaw').click();
-	$("#clickEventText").val("");
-	$("#hoverEventText").val("");
-	$("#hoverEventValue").val("");
-	$("#hoverEventTextSnippet").val("");
-	$("#snippetcolor").val("none");
-	$("#text_extra").val("");
-	$("#color_extra").val("none");
-	$("#clickEvent").val('none');
-	$("#hoverEvent").val('none');
-	$("#insertion_text").val('');
-	$("#bold_text_extra").prop("checked",false);
-	$("#italic_text_extra").prop("checked",false);
-	$("#underlined_text_extra").prop("checked",false);
-	$("#strikethrough_text_extra").prop("checked",false);
-	$("#obfuscated_text_extra").prop("checked",false);
-	$('#hoverEventEntityName').val('');
-	$('#hoverEventEntityID').val('');
-	$('#hoverEventEntityType').val('');
-	$('#textsnippets_add').html(getLanguageString('textsnippets.addsnippet'),localStorage.getItem('langCode'));
-	$('#textsnippets-add-button').addClass('btn-default');
-	$('#textsnippets-add-button').removeClass('btn-danger');
-	$('#obj_player').val('');
-	$('#obj_score').val('');
-	$('#text_extra_container').removeClass('has-error');
-	refreshOutput();
-}
-function editExtra(index) {
-	editing = true;
-	$('#snippetsWell').hide();
-	$('#editModalData').show();
-
-	currentEdit = index;
-
-	if (jobject[index].text != undefined) {
-		$('#obj_extra_container_edit').hide();
-		$('#text_extra_container_edit').show();
-		$('#translate_selector_container_edit').hide();
-		$('#selector_extra_container_edit').hide();
-		$('#text_extra_edit').val(jobject[index].text);
-	} else if (jobject[index].selector != undefined) {
-		$('#obj_extra_container_edit').hide();
-		$('#selector_extra_container_edit').show();
-		$('#text_extra_container_edit').hide();
-		$('#translate_selector_container_edit').hide();
-		$('#selector_edit').val(jobject[index].selector);
-	} else if (jobject[index].translate != undefined) {
-		$('#obj_extra_container_edit').hide();
-		$('#text_extra_container_edit').hide();
-		$('#selector_extra_container_edit').hide();
-		$('#translate_selector_container_edit').show();
-		if (!hasAlertedTranslationObjects) {
-			swal('Translation objects are currently broken and may crash your game.','Please test your translation before publishing it.','warning');
-			hasAlertedTranslationObjects = true;
-		}
-	} else if (jobject[index].score != undefined) {
-		$('#obj_extra_container_edit').show();
-		$('#text_extra_container_edit').hide();
-		$('#translate_selector_container_edit').hide();
-		$('#selector_extra_container_edit').hide();
-		$('#obj_player_edit').val(jobject[index].score.name);
-		$('#obj_score_edit').val(jobject[index].score.objective);
-	}
-
-	refreshLanguage();
-
-	$('#colorPreviewColor_edit').css('background-color',getCSSHEXFromWord(jobject[index].color));
-	if (jobject[index].color != undefined) {
-		$("#color_extra_edit").val(jobject[index].color);
-	} else {
-		$("#color_extra_edit").val('none');
-	}
-
-	if (jobject[index].bold != undefined) {
-		$('#bold_text_extra_edit').prop('checked',true);
-	}
-	if (jobject[index].italic != undefined) {
-		$('#italic_text_extra_edit').prop('checked',true);
-	}
-	if (jobject[index].underlined != undefined) {
-		$('#underlined_text_extra_edit').prop('checked',true);
-	}
-	if (jobject[index].strikethrough != undefined) {
-		$('#strikethrough_text_extra_edit').prop('checked',true);
-	}
-	if (jobject[index].obfuscated != undefined) {
-		$('#obfuscated_text_extra_edit').prop('checked',true);
-	}
-
-	if (jobject[index].clickEvent != undefined) {
-		$('#clickEvent_edit').val(jobject[index].clickEvent.action);
-		$('#clickEventText_edit').val(jobject[index].clickEvent.value);
-	} else {
-		$('#clickEvent_edit').val('none');
-		$('#clickEventText_edit').val('');
-	}
-
-
-	if (jobject[index].hoverEvent != undefined) {
-		$('#hoverEvent_edit').val(jobject[index].hoverEvent.action);
-		if ($('#hoverEvent_edit').val() != 'show_entity') {
-			if (jobject[index].hoverEvent.action == 'show_text') {
-				$('#hoverEventText_edit').val(JSON.stringify(jobject[index].hoverEvent.value));
-			} else {
-				$('#hoverEventText_edit').val(jobject[index].hoverEvent.value);
-			}
-		} else {
-			$('#hoverEventEntityID_edit').val(jobject[index].hoverEvent.value.match(/id:([a-zA-Z0-9]+)/g )[0].replace('id:',''));
-			$('#hoverEventEntityName_edit').val(jobject[index].hoverEvent.value.match(/name:([a-zA-Z0-9]+)/g )[0].replace('name:',''));
-			$('#hoverEventEntityType_edit').val(jobject[index].hoverEvent.value.match(/type:([a-zA-Z0-9]+)/g )[0].replace('type:',''));
-		}
-	} else {
-		$('#hoverEvent_edit').val('none');
-		$('#hoverEventText_edit').val('');
-	}
-
-	if (jobject[index].insertion != undefined) {
-		$('#insertion_text_edit').val(jobject[index].insertion);
-	}
-
-	refreshOutput();
-}
-function cancelExtraEdit() {
-	$('#editModalData').hide();
-	$('#snippetsWell').show();
-}
-function saveExtraEdit() {
-	editing = false;	
-	extraIndex = currentEdit;
-	jobject[extraIndex].color = getSelected("color_extra_edit");
-
-	if (jobject[extraIndex].color == 'none') {
-		delete jobject[extraIndex].color;
-	}
-
-	if ($('#obj_extra_container_edit').is(":visible")) {
-		jobject[extraIndex].score = new Object;
-		jobject[extraIndex].score.name = $('#obj_player_edit').val();
-		jobject[extraIndex].score.objective = $('#obj_score_edit').val();
-	} else if ($('#text_extra_container_edit').is(":visible")) {
-		jobject[extraIndex].text = $('#text_extra_edit').val();
-	} else if ($('#selector_extra_container_edit').is(":visible")) {
-		jobject[extraIndex].selector = $('#selector_edit').val();
-	} else if ($('#translate_selector_container_edit').is(":visible")) {
-		jobject[extraIndex].translate = $('#translate_input_edit').val();
-		if (matchLength != 0) {
-			if (get_type(jobject.with) != "[object Array]") {
-				jobject[extraIndex].with = new Array();
-			}
-			for (var i = 0; i < matchLength; i++) {
-				jobject[extraIndex].with[i] = $('#extraTranslationParameter'+i+'_edit').val();
-			};
-		}
-	} else {
-		swal('An unexpected error occured.');
-	}
-
-	delete jobject[extraIndex].bold;
-	delete jobject[extraIndex].italic;
-	delete jobject[extraIndex].underlined;
-	delete jobject[extraIndex].strikethrough;
-	delete jobject[extraIndex].obfuscated;
-
-	if (getChecked("bold_text_extra_edit")) {
-		jobject[extraIndex].bold = "true";
-	}
-	if (getChecked("italic_text_extra_edit")) {
-		jobject[extraIndex].italic = "true";
-	}
-	if (getChecked("underlined_text_extra_edit")) {
-		jobject[extraIndex].underlined = "true";
-	}
-	if (getChecked("strikethrough_text_extra_edit")) {
-		jobject[extraIndex].strikethrough = "true";
-	}
-	if (getChecked("obfuscated_text_extra_edit")) {
-		jobject[extraIndex].obfuscated = "true";
-	}
-
-	delete jobject[extraIndex].clickEvent;
-	delete jobject[extraIndex].hoverEvent;
-
-	var clickEventType_edit = $("#clickEvent_edit").val();
-	var hoverEventType_edit = $("#hoverEvent_edit").val();
-
-	if (clickEventType_edit != "none") {
-		jobject[extraIndex].clickEvent = new Object();
-		jobject[extraIndex].clickEvent.action = clickEventType_edit;
-		jobject[extraIndex].clickEvent.value = $('#clickEventText_edit').val();
-		if (clickEventType_edit == "run_command" || clickEventType_edit == "suggest_command") {
-			if ($('#clickEventText_edit').val().length > 90) {
-				swal('Commands cannot be longer than 90 characters!','You should edit the length of your command before using this in game.','error');
-			}
-		}
-	}
-	if (hoverEventType_edit != "none") {
-		jobject[extraIndex].hoverEvent = new Object();
-		jobject[extraIndex].hoverEvent.action = hoverEventType_edit;
-		if (hoverEventType_edit == 'show_text') {
-			try {
-				jobject[extraIndex].hoverEvent.value = JSON.parse($('#hoverEventText_edit').val());
-			} catch(err) {
-				jobject[extraIndex].hoverEvent.value = {"text":"","extra":[{"text":$('#hoverEventText_edit').val()}]};
-			}
-		} else {
-			jobject[extraIndex].hoverEvent.value = $('#hoverEventText_edit').val();
-		}
-	}
-	if (hoverEventType_edit == "show_entity") {
-		if ($('#hoverEventEntityID_edit').val() == '') {
-			$('#hoverEventEntityID_edit').val('(ID)')
-		}
-		if ($('#hoverEventEntityName_edit').val() == '') {
-			$('#hoverEventEntityName_edit').val('(Name)')
-		}
-		if ($('#hoverEventEntityType_edit').val() == '') {
-			$('#hoverEventEntityType_edit').val('(Type)')
-		}
-		jobject[extraIndex].hoverEvent.value = '{id:'+removeWhiteSpace($('#hoverEventEntityID_edit').val())+',name:'+removeWhiteSpace($('#hoverEventEntityName_edit').val())+',type:'+removeWhiteSpace($('#hoverEventEntityType_edit').val())+'}';
-	}
-	if ($('#insertion_text_edit').val() != '') {
-		jobject[extraIndex].insertion = $('#insertion_text_edit').val();
-	} else {
-		delete jobject[extraIndex].insertion;
-	}
-
-	$('#editModalData').hide();
-	$('#snippetsWell').show();
-
-	refreshOutput();
-}
 function clearExtraText() {
 	delete jobject;
 	refreshOutput();
@@ -654,121 +418,6 @@ function modifyExtraText(index,text) {
 		jobject[index].text = text;
 	}
 	refreshOutput();
-}
-function cancelAddExtra() {
-	showView('tellraw');
-	clearExtra();
-}
-function addExtra() {
-	editing = false;
-	if (extraTextFormat == 'raw' && $('#text_extra').val() == '') {
-		$('#text_extra_container').addClass('has-error');
-		$('#text_extra').focus();
-		$('#textsnippets-add-button').removeClass('btn-default');
-		$('#textsnippets-add-button').addClass('btn-danger');
-		return false;
-	} else if ($("#hoverEvent").val() == 'show_text' && $('#hoverEventTextSnippet').val() != '') {
-		swal('You entered text, but never added it!');
-		$('#hoverEventTextSnippet').focus();
-		$('#textsnippets-add-button').removeClass('btn-default');
-		$('#textsnippets-add-button').addClass('btn-danger');
-		return false;
-	} else {
-		showView('tellraw');
-	}
-	if (get_type(jobject) != "[object Array]") {
-		jobject = [];
-	}
-	if (extraTextFormat == 'NEW_ITERATE_FLAG') {
-		jobject.push({"NEW_ITERATE_FLAG":true});
-	} else {
-		var clickEventType = $("#clickEvent").val();
-		var hoverEventType = $("#hoverEvent").val();
-
-		jobject.push(new Object());
-		var extraIndex = jobject.length - 1;
-		if (extraTextFormat == 'trn') {
-			jobject[extraIndex].translate = $('#translate_input').val();
-			if (matchLength != 0) {
-				if (get_type(jobject.with) != "[object Array]") {
-					jobject[extraIndex].with = new Array();
-				}
-				for (var i = 0; i < matchLength; i++) {
-					jobject[extraIndex].with[i] = $('#extraTranslationParameter'+i).val();
-				};
-			}
-		} else if (extraTextFormat == 'raw') {
-			jobject[extraIndex].text = $('#text_extra').val();
-		} else if (extraTextFormat == 'obj') {
-			jobject[extraIndex].score = new Object;
-			jobject[extraIndex].score.name = $('#obj_player').val();
-			jobject[extraIndex].score.objective = $('#obj_score').val();
-		} else if (extraTextFormat == 'sel') {
-			jobject[extraIndex].selector = $('#selector').val();
-		}
-
-
-		jobject[extraIndex].color = getSelected("color_extra");
-		if (jobject[extraIndex].color == 'none') {
-			delete jobject[extraIndex].color;
-		}
-
-		if (getChecked("bold_text_extra")) {
-			jobject[extraIndex].bold = "true";
-		}
-		if (getChecked("italic_text_extra")) {
-			jobject[extraIndex].italic = "true";
-		}
-		if (getChecked("underlined_text_extra")) {
-			jobject[extraIndex].underlined = "true";
-		}
-		if (getChecked("strikethrough_text_extra")) {
-			jobject[extraIndex].strikethrough = "true";
-		}
-		if (getChecked("obfuscated_text_extra")) {
-			jobject[extraIndex].obfuscated = "true";
-		}
-
-		if (clickEventType != "none") {
-			jobject[extraIndex].clickEvent = new Object();
-			jobject[extraIndex].clickEvent.action = clickEventType;
-			jobject[extraIndex].clickEvent.value = $('#clickEventText').val();
-			if (clickEventType == "run_command" || clickEventType == "suggest_command") {
-				if ($('#clickEventText').val().length > 90) {
-					swal('Commands cannot be longer than 90 characters!','You should edit the length of your command before using this in game.','error');
-				}
-			}
-
-		}
-		if (hoverEventType != "none") {
-			jobject[extraIndex].hoverEvent = new Object();
-			jobject[extraIndex].hoverEvent.action = hoverEventType;
-			if (hoverEventType == 'show_text') {
-				jobject[extraIndex].hoverEvent.value = JSON.parse($('#hoverEventText').val());
-				if ($('#color_hover').val() != 'none') {
-					jobject[extraIndex].hoverEvent.value.color = $('#color_hover').val();
-				}
-			} else {
-				jobject[extraIndex].hoverEvent.value = $('#hoverEventValue').val();
-			}
-		}
-		if (hoverEventType == "show_entity") {
-			if ($('#hoverEventEntityID').val() == '') {
-				$('#hoverEventEntityID').val('(ID)')
-			}
-			if ($('#hoverEventEntityName').val() == '') {
-				$('#hoverEventEntityName').val('(Name)')
-			}
-			if ($('#hoverEventEntityType').val() == '') {
-				$('#hoverEventEntityType').val('(Type)')
-			}
-			jobject[extraIndex].hoverEvent.value = '{id:'+removeWhiteSpace($('#hoverEventEntityID').val())+',name:'+removeWhiteSpace($('#hoverEventEntityName').val())+',type:'+removeWhiteSpace($('#hoverEventEntityType').val())+'}';
-		}
-		if ($('#insertion_text').val() != '') jobject[extraIndex].insertion = $('#insertion_text').val();
-	}
-	clearExtra();
-	refreshOutput();
-
 }
 function refreshSavesList() {
 	$('.savesContainer').html('');
@@ -802,7 +451,66 @@ function deleteJObjectSave(saveName) {
 function showFixerView() {
 	showView('escaping-issue',true,false,true);
 }
+function build_quill_delta() {
+	var delta = {"ops":[]};
+	if (quill !== undefined) {
+		for (var i = 0; i < jobject.length; i++) {
+			var dops = {};
+			dops.insert = jobject[i].text;
+			if (jobject[i].bold) {
+				if (!dops.attributes) {
+					dops.attributes = {};
+				}
+				dops.attributes.bold = jobject[i].bold
+			}
+			if (jobject[i].italic) {
+				if (!dops.attributes) {
+					dops.attributes = {};
+				}
+				dops.attributes.italic = jobject[i].italic
+			}
+			delta.ops.push(dops);
+		}
+		return delta;
+	} else {
+		return delta;
+	}
+}
+function build_jobject() {
+	jobject = [];
+	if (quill !== undefined) {
+		var qc = quill.getContents();
+		for (var i = 0; i < qc.ops.length; i++) {
+			var cc = qc.ops[i];
+			var newObj = {"text": cc.insert};
+
+			if (cc && cc.attributes) {
+				var atr = cc.attributes;
+				if (atr.bold) {
+					newObj.bold = true;
+				}
+				if (atr.italic) {
+					newObj.italic = true;
+				}
+			}
+
+			jobject.push(newObj);
+		};
+
+		jobject[jobject.length - 1].text = jobject[jobject.length - 1].text.replace(/\n$/g, "");
+		if (jobject[jobject.length - 1].text == "") {
+			jobject.splice(jobject.length - 1, 1);
+		}
+
+		return jobject;
+	} else {
+		return [];
+	}
+}
 function refreshOutput(input) {
+	/*BUILD JOBJECT*/
+	jobject = build_jobject();
+
 	/*VERIFY CONTENTS*/
 	jobject = verify_jobject_format(jobject);
 
@@ -994,104 +702,6 @@ function refreshOutput(input) {
 
 	/*COMMAND MANAGER*/
 	if ($("#command").val() == "") $("#command").val(templates[localStorage.getItem('jtemplate')]['command']);
-
-	/*HOVEREVENT SUGGESTION MANAGER*/
-	$('#hoverEventValue').removeAttr('disabled');
-	selectedHover = getSelected("hoverEvent");
-	if (selectedHover == "show_achievement") {
-		$('#hoverEventValue').autocomplete({
-			source: achievements
-		});
-	} else if (selectedHover == "show_item") {
-		$('#hoverEventValue').autocomplete({
-			source: []
-		});
-	} else if (selectedHover == "show_entity") {
-		$('.hovertext_default').hide();
-		$('.hovertext_entity').show();
-	} else if (selectedHover == "none") {
-		$('#hoverEventValue').attr('disabled','true');
-		$('#hoverEventValue').autocomplete({
-			source: []
-		});
-	}
-	if (selectedHover != "show_entity") {
-		$('.hovertext_default').show();
-		$('.hovertext_entity').hide();
-	}
-	if (selectedHover == "show_text") {
-		$('.hovertext_default').hide();
-		$('.hovertext_text').show();
-		$('#hoverEventText').val(JSON.stringify({"text":"","extra":[]}));
-	} else {
-		$('.hovertext_text').hide();
-	}
-
-	/*HOVEREVENT EDIT SUGGESTION MANAGER*/
-	$('#hoverEventText_edit').removeAttr('disabled');
-	selectedHover_edit = getSelected('hoverEvent_edit');
-	if (selectedHover_edit == "show_achievement") {
-		$('#hoverEventText_edit').autocomplete({
-			source: achievements
-		});
-	} else if (selectedHover_edit == "show_item") {
-		$('#hoverEventText_edit').autocomplete({
-			source: []
-		});
-	} else if (selectedHover_edit == "show_entity") {
-		$('.hovertext_default_edit').hide();
-		$('.hovertext_entity_edit').show();
-	} else if (selectedHover_edit == "none") {
-		$('#hoverEventText_edit').attr('disabled','true');
-		$('#hoverEventText_edit').autocomplete({
-			source: []
-		});
-	}
-	if (selectedHover_edit != "show_entity") {
-		$('.hovertext_default_edit').show();
-		$('.hovertext_entity_edit').hide();
-	}
-	if (selectedHover_edit != "show_text") {
-		$('.hovertext_text_edit').hide();
-	} else {
-		$('.hovertext_text_edit').show();
-	}
-
-	/*CLICKEVENT SUGGESTION MANAGER*/
-	$('#clickEventText').removeAttr('disabled');
-	selectedClick = getSelected("clickEvent");
-	if (selectedClick == "run_command" || selectedClick == "suggest_command") {
-		$('#clickEventText').autocomplete({
-			source: commands
-		});
-	} else if (selectedClick == "open_url") {
-		$('#clickEventText').autocomplete({
-			source: ["https://", "http://", "http://apple.com", "https://minecraft.net", "https://mojang.com", "http://ezekielelin.com", "https://reddit.com"]
-		});
-	} else if (selectedClick == "none") {
-		$('#clickEventText').attr('disabled','true');
-		$('#clickEventText').autocomplete({
-			source: []
-		});
-	}
-
-	/*CLICKEVENT EDIT SUGGESTION MANAGER*/
-	$('#clickEventText_edit').removeAttr('disabled');
-	selectedClick_edit = getSelected('clickEvent_edit');
-	if (selectedClick_edit == "run_command" || selectedClick_edit == "suggest_command") {
-		$('#clickEventText_edit').autocomplete({
-			source: commands
-		});
-	} else if (selectedClick_edit == "open_url") {
-		$('#clickEventText_edit').autocomplete({
-			source: ["http://apple.com", "https://minecraft.net", "https://mojang.com", "http://ezekielelin.com", "https://", "https://reddit.com", "http://"]
-		});
-	} else if (selectedClick_edit == "none") {
-		$('#clickEventText_edit').attr('disabled','true');
-		$('#clickEventText_edit').autocomplete({
-			source: []
-		});
-	}
 
 	/*PREPARING OUTPUT*/
 
@@ -1334,6 +944,9 @@ function initialize() {
 		localStorage.setItem('langCode','en_US');
 	}
 
+	quill = new Quill('#editor');
+	quill.addModule('toolbar', { container: '#toolbar' });
+
 	if (localStorage.getItem('jformat') != version && localStorage.getItem('jformat') != undefined) {
 		swal({
 			title: "Your cookie format is old!",
@@ -1437,26 +1050,27 @@ function initialize() {
 localStorage.setItem('donateAlert','shown');
 }
 }
+	//
 
-for (var i = 0; i < Object.keys(templates).length; i++) {
-	var key = Object.keys(templates)[i]
-	if (key == localStorage.getItem('jtemplate')) {
-		var classString = 'btn-success';
-	} else {
-		var classString = 'btn-default';
+	for (var i = 0; i < Object.keys(templates).length; i++) {
+		var key = Object.keys(templates)[i]
+		if (key == localStorage.getItem('jtemplate')) {
+			var classString = 'btn-success';
+		} else {
+			var classString = 'btn-default';
+		}
+		$('#templateButtons').append('<button class="btn btn-xs ' + classString + ' templateButton" lang="template.' + key + '" version="' + templates[key]['version'] + '" template="'+ key +'"></button> ');
 	}
-	$('#templateButtons').append('<button class="btn btn-xs ' + classString + ' templateButton" lang="template.' + key + '" version="' + templates[key]['version'] + '" template="'+ key +'"></button> ');
-}
-if (localStorage.getItem('jtemplate') == undefined) {
-	localStorage.setItem('jtemplate', 'tellraw');
-}
-if (lang[localStorage.getItem('langCode')]) {
-	errorString = getLanguageName(localStorage.getItem('langCode')) + '<br><br>';
-} else {
-	errorString = '&lt;language unknown&gt;<br><br>';
-}
-/*var enCount = JSON.stringify(lang['en_US']).length;*/
-for (var i = 0; i < Object.keys(lang).length; i++) {
+	if (localStorage.getItem('jtemplate') == undefined) {
+		localStorage.setItem('jtemplate', 'tellraw');
+	}
+	if (lang[localStorage.getItem('langCode')]) {
+		errorString = getLanguageName(localStorage.getItem('langCode')) + '<br><br>';
+	} else {
+		errorString = '&lt;language unknown&gt;<br><br>';
+	}
+	/*var enCount = JSON.stringify(lang['en_US']).length;*/
+	for (var i = 0; i < Object.keys(lang).length; i++) {
 		/*var langKey = Object.keys(lang)[i];
 		var currentCount = JSON.stringify(lang[langKey]).length;
 		var currentPercentage = Math.round(currentCount/enCount*100);
@@ -1479,6 +1093,7 @@ for (var i = 0; i < Object.keys(lang).length; i++) {
 	
 	if (localStorage['jobject'] != undefined) {
 		jobject = verify_jobject_format(JSON.parse(localStorage["jobject"]));
+		quill.setContents(build_quill_delta());
 	}
 
 	if (localStorage.getItem('nlOutput') == undefined) {
@@ -1511,6 +1126,10 @@ for (var i = 0; i < Object.keys(lang).length; i++) {
 		localStorage.setItem('jtemplate',template);
 		$('#command').val(templates[localStorage.getItem('jtemplate')]['command']);
 
+		refreshOutput();
+	});
+
+	quill.on('text-change', function(delta, source) {
 		refreshOutput();
 	});
 
@@ -1682,6 +1301,7 @@ for (var i = 0; i < Object.keys(lang).length; i++) {
 	if (localStorage.getItem('darkMode') && localStorage.getItem('darkMode') == 'true') {
 		$('#enable_dark_mode').click(); //Finish setting up dark mode after handlers exist
 	}
+
 }
 $(document).ready(function(){
 	if (localStorage.getItem('darkMode') && localStorage.getItem('darkMode') == 'true') {
