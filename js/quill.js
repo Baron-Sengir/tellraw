@@ -5985,6 +5985,10 @@ Format = (function() {
   };
 
   Format.FORMATS = {
+    obfs: {
+      tag: 'OBFS',
+      prepare: 'obfs'
+    },
     bold: {
       tag: 'B',
       prepare: 'bold'
@@ -8890,6 +8894,7 @@ Toolbar = (function() {
       'size': 'size'
     },
     TOGGLE: {
+      'obfs': 'obfs',
       'bold': 'bold',
       'bullet': 'bullet',
       'image': 'image',
@@ -9424,7 +9429,7 @@ Quill = (function(superClass) {
   Quill.themes = [];
 
   Quill.DEFAULTS = {
-    formats: ['align', 'bold', 'italic', 'strike', 'underline', 'color', 'background', 'font', 'size', 'link', 'image', 'bullet', 'list'],
+    formats: ['align', 'obfs', 'bold', 'italic', 'strike', 'underline', 'color', 'background', 'font', 'size', 'link', 'image', 'bullet', 'list'],
     modules: {
       'keyboard': true,
       'paste-manager': true,

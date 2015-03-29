@@ -944,7 +944,6 @@ function initialize() {
 	quill = new Quill('#editor', {
 		formats: ['bold', 'italic', 'underline', 'strike', 'color']
 	});
-	quill.addFormat('lol', { tag: 'LOL', prepare: 'lol' });
 	quill.addModule('toolbar', { container: '#toolbar' });
 
 	if (localStorage.getItem('jformat') != version && localStorage.getItem('jformat') != undefined) {
@@ -1297,17 +1296,6 @@ localStorage.setItem('donateAlert','shown');
 	});
 	
 	//
-
-	$('.ql-custom-obfuscated').on('click',function(){
-		var range = quill.getSelection();
-		alert(JSON.stringify(quill.getSelection()));
-		if (range) {
-			quill.formatText(range.start, range.end, 'lol', true);
-		} else {
-			console.log('User cursor is not in editor');
-		}
-	});
-
 	//Dark Mode
 
 	if (localStorage.getItem('darkMode') && localStorage.getItem('darkMode') == 'true') {
