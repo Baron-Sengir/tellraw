@@ -352,8 +352,8 @@ function clearJObjectSaves() {
 }
 function obfuscationPreviewHandler() {
 	return
-	$('obfuscated').html(setObfuscatedString($('obfuscated').html()));
-	if ($('obfuscated').length > 0) {
+	$('obfs').html(setObfuscatedString($('obfs').html()));
+	if ($('obfs').length > 0) {
 		setTimeout(obfuscationPreviewHandler, 20);
 	}
 }
@@ -945,6 +945,7 @@ function initialize() {
 		formats: ['bold', 'italic', 'underline', 'strike', 'color']
 	});
 	quill.addModule('toolbar', { container: '#toolbar' });
+	quill.addFormat('obfuscated', { tag: 'OBFS', prepare: 'obfuscated' });
 
 	if (localStorage.getItem('jformat') != version && localStorage.getItem('jformat') != undefined) {
 		swal({
@@ -1130,6 +1131,12 @@ localStorage.setItem('donateAlert','shown');
 
 	quill.on('text-change', function(delta, source) {
 		refreshOutput();
+	});
+
+	$('.ql-obfs').on('click',function(){
+		quill.focus();
+		var range = quill.getSelection();
+		quill.formatText(range, 'obfuscated', true);
 	});
 
 	$('#command').val(localStorage.getItem('jcommand'));
