@@ -450,6 +450,12 @@ function build_quill_delta() {
 				}
 				dops.attributes.italic = jobject[i].italic
 			}
+			if (jobject[i].obfuscated) {
+				if (!dops.attributes) {
+					dops.attributes = {};
+				}
+				dops.attributes.obfuscated = jobject[i].obfuscated
+			}
 			delta.ops.push(dops);
 		}
 		return delta;
@@ -472,6 +478,9 @@ function build_jobject() {
 				}
 				if (atr.italic) {
 					newObj.italic = true;
+				}
+				if (atr.obfuscated) {
+					newObj.obfuscated = true;
 				}
 			}
 
