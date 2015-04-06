@@ -254,15 +254,6 @@ if (!String.prototype.codePointAt) {
         return code;
     };
 }
-
-function setObfuscatedString(string) {
-	var output = "";
-	for (var i = string.length - 1; i >= 0; i--) {
-		string[i]
-		output = output + chars[Math.floor(Math.random() * chars.length)];
-	};
-	return output;
-}
 function saveJObject() {
 	swal({
 		title: "Please enter a save name.",
@@ -349,13 +340,6 @@ function clearJObjectSaves() {
 			swal('Deleted!','Your saves were deleted', 'success');
 		}
 	});
-}
-function obfuscationPreviewHandler() {
-	return
-	$('obfs').html(setObfuscatedString($('obfs').html()));
-	if ($('obfs').length > 0) {
-		setTimeout(obfuscationPreviewHandler, 20);
-	}
 }
 function getCSSHEXFromWord(w) {
 	if (w == "black") return("#000000");
@@ -895,9 +879,6 @@ function jsonParse() {
 	} else {
 		$('#jsonPreview').html(getLanguageString('output.nothing',localStorage.getItem('langCode')));
 		$('#jsonPreview').css('color','white');
-	}
-	if ($('.jsonPreviewObfuscated').length > 0) {
-		setTimeout(obfuscationPreviewHandler, 20);
 	}
 }
 function refreshLanguage(dropdownSelection) {
