@@ -1,6 +1,7 @@
 var chars = [1,2,3,4,5,6,7,8,9,0,'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
 var matchLength = 0;
 var version = 3;
+var is_prerelease = true;
 var tos_version = 1;
 var notice = {
 	"show": false,
@@ -65,6 +66,9 @@ function deleteOrphanSpecialTags() {
 	}
 }
 function reportAnIssue(ptitle) {
+	if (is_prerelease) {
+		return true;
+	}
 	var title = "";
 	var body = "";
 	if (ptitle != undefined) {
@@ -1329,7 +1333,17 @@ localStorage.setItem('donateAlert','shown');
 		$(this).hide();
 		$('#enable_dark_mode').show();
 	});
+
+	if (is_prerelease) {
+		$('.report-issue').attr('disabled','yes');
+		$('.corner-ribbon').show();
+	}
+
 	$('.report-issue').on('click',function(){
+		if (is_prerelease) {
+			alert('Issues cannot be reported on a pre-release version');
+			return false
+		}
 		$('.view-container[view="report-issue"]').children().not('.cancel-issue-row').hide();
 		$('#issue-workflow-r1').show();
 		showView('report-issue');
@@ -1345,7 +1359,6 @@ localStorage.setItem('donateAlert','shown');
 		if (bookPage < topPage) bookPage++;
 		refreshOutput();
 	});
-
 	$('.issue-button').click(function(){
 		var parentRow = $(this).parent().parent();
 		parentRow.hide();
