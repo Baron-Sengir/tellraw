@@ -489,6 +489,12 @@ function build_quill_delta() {
 				}
 				dops.attributes.obfuscated = jobject[i].obfuscated
 			}
+			if (jobject[i].strikethrough) {
+				if (!dops.attributes) {
+					dops.attributes = {};
+				}
+				dops.attributes.strike = jobject[i].strikethrough
+			}
 			if (jobject[i].clickEvent) {
 				if (!dops.attributes) {
 					dops.attributes = {};
@@ -523,6 +529,9 @@ function build_jobject() {
 				}
 				if (atr.italic) {
 					newObj.italic = true;
+				}
+				if (atr.strike) {
+					newObj.strikethrough = true;
 				}
 				if (atr.obfuscated) {
 					newObj.obfuscated = true;
