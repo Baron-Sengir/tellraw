@@ -1162,10 +1162,19 @@ localStorage.setItem('donateAlert','shown');
 		var range = quill.getSelection();
 		quill.formatText(range, 'obfuscated', true);
 	});
-	$('.ql-special').on('click',function(){
+	$('.ql-click-event').on('click',function(){
 		var action = prompt('action?: run_command, suggest_command, open_url, change_page');
 		var value = prompt('value?');
-		var object = {"action":action,"value":value};
+		var object = {"type":"click_event","action":action,"value":value};
+		var tagid = storeSpecialTagItem(object);
+		quill.focus();
+		var range = quill.getSelection();
+		quill.formatText(range, 'specialtag', tagid);
+	});
+	$('.ql-hover-event').on('click',function(){
+		var action = prompt('action?: show_text, show_item, show_entity, show_achievement');
+		var value = prompt('value?');
+		var object = {"type":"hover_event","action":action,"value":value};
 		var tagid = storeSpecialTagItem(object);
 		quill.focus();
 		var range = quill.getSelection();
