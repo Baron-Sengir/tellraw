@@ -31,6 +31,39 @@ var topPage = 1;
 var embed = false;
 var quill = undefined;
 
+function getSpecialTagItem(tagid) {
+	if (localStorage.getItem('special_tag_' + tagid)) {
+		return JSON.parse(localStorage.getItem('special_tag_' + tagid));
+	} else {
+		return false;
+	}
+}
+function storeSpecialTagItem(item) {
+	var tagid = makeSpecialTagID();
+	if (localStorage.getItem('special_tag_' + tagid)) {
+		return false;
+	} else {
+		localStorage.setItem('special_tag_' + tagid, JSON.stringify(item));
+		return tagid;
+	}
+}
+function makeSpecialTagID() {
+	var tagid = "" + Math.random();
+	return tagid.replace('.','')
+}
+function deleteOrphanSpecialTags() {
+	for (var x = 0; x < Object.keys(localStorage).length; x++) {
+		for (var i = 0; i < Object.keys(localStorage).length; i++) {
+			var key = Object.keys(localStorage)[i];
+			if (key.indexOf('special_tag_') != -1) {
+				var tagid = key.replace('special_tag_','');
+				if ($('specialtag[value=' + tagid +']').length == 0) {
+					localStorage.removeItem(key);
+				}
+			}
+		}
+	}
+}
 function reportAnIssue(ptitle) {
 	var title = "";
 	var body = "";
@@ -936,6 +969,7 @@ function initialize() {
 	});
 	quill.addModule('toolbar', { container: '#toolbar' });
 	quill.addFormat('obfuscated', { tag: 'OBFS', prepare: 'obfuscated' });
+	quill.addFormat('specialtag', { tag: 'SPECIALTAG', attribute: 'value'});
 
 	if (localStorage.getItem('jformat') != version && localStorage.getItem('jformat') != undefined) {
 		swal({
@@ -1128,6 +1162,15 @@ localStorage.setItem('donateAlert','shown');
 		var range = quill.getSelection();
 		quill.formatText(range, 'obfuscated', true);
 	});
+	$('.ql-special').on('click',function(){
+		var action = prompt('action?: run_command, suggest_command, open_url, change_page');
+		var value = prompt('value?');
+		var object = {"action":action,"value":value};
+		var tagid = storeSpecialTagItem(object);
+		quill.focus();
+		var range = quill.getSelection();
+		quill.formatText(range, 'specialtag', tagid);
+	});
 
 	$('#command').val(localStorage.getItem('jcommand'));
 
@@ -1291,7 +1334,7 @@ localStorage.setItem('donateAlert','shown');
 			reportAnIssue();
 		}
 	});
-	
+
 	//
 	//Dark Mode
 
