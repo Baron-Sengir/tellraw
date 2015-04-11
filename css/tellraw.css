@@ -238,3 +238,6 @@ div[class*='col-xs-'] {
 obfs {
 	background-color:red;
 }
+specialtag {
+	background-color: blue;
+}

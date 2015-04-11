@@ -489,6 +489,18 @@ function build_quill_delta() {
 				}
 				dops.attributes.obfuscated = jobject[i].obfuscated
 			}
+			if (jobject[i].clickEvent) {
+				if (!dops.attributes) {
+					dops.attributes = {};
+				}
+				dops.attributes.specialtag = storeSpecialTagItem({"type":"click_event", "value": jobject[i].clickEvent.value, "action": jobject[i].clickEvent.action});
+			}
+			if (jobject[i].hoverEvent) {
+				if (!dops.attributes) {
+					dops.attributes = {};
+				}
+				dops.attributes.specialtag = storeSpecialTagItem({"type":"hover_event", "value": jobject[i].hoverEvent.value, "action": jobject[i].hoverEvent.action});
+			}
 			delta.ops.push(dops);
 		}
 		return delta;
@@ -515,6 +527,15 @@ function build_jobject() {
 				if (atr.obfuscated) {
 					newObj.obfuscated = true;
 				}
+				if (atr.specialtag) {
+					var tagcontents = getSpecialTagItem(atr.specialtag);
+					if (tagcontents.type == "click_event") {
+						newObj.clickEvent = {"action": tagcontents.action, "value": tagcontents.value}
+					}
+					if (tagcontents.type == "hover_event") {
+						newObj.hoverEvent = {"action": tagcontents.action, "value": tagcontents.value}
+					}
+				}
 			}
 
 			jobject.push(newObj);
@@ -536,6 +557,8 @@ function refreshOutput(input) {
 
 	/*VERIFY CONTENTS*/
 	jobject = verify_jobject_format(jobject);
+
+	deleteOrphanSpecialTags();
 
 	if ($('#command').val().indexOf('%s') == -1) {
 		$('#command').val('/tellraw @p %s');
