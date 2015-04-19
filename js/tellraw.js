@@ -36,6 +36,7 @@ function getSpecialTagItem(tagid) {
 	if (localStorage.getItem('special_tag_' + tagid)) {
 		return JSON.parse(localStorage.getItem('special_tag_' + tagid));
 	} else {
+		alert('An error occured fetching tagid ' + tagid);
 		return false;
 	}
 }
@@ -1214,7 +1215,7 @@ localStorage.setItem('donateAlert','shown');
 		var tagid = storeSpecialTagItem(object);
 		quill.focus();
 		var range = quill.getSelection();
-		quill.formatText(range, 'hoeverEvent', tagid);
+		quill.formatText(range, 'hoverEvent', tagid);
 	});
 
 	$('#command').val(localStorage.getItem('jcommand'));
