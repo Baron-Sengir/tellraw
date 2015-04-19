@@ -229,7 +229,7 @@ function goToByScroll(id){
 	}
 }
 
-var templates = 
+var templates =
 {
 	"tellraw": {
 		"command": "/tellraw @p %s",
@@ -310,7 +310,7 @@ function saveJObject() {
 			localStorage.setItem('currentSaveSlot',saveTo);
 			localStorage.setItem(saveSlot, JSON.stringify({"command": $('#command').val(), "jobject": jobject}));
 			if (overwrite) {
-				swal('Saved your current revision to `' + saveTo + '`, overwriting your previous save to that slot');	
+				swal('Saved your current revision to `' + saveTo + '`, overwriting your previous save to that slot');
 			} else {
 				swal('Saved your current revision to `' + saveTo + '`, which created a new saveSlot');
 			}
@@ -677,7 +677,7 @@ function refreshOutput(input) {
 		$('.hoverEventDisabledSigns').show();
 	} else {
 		$('.clickEventDisabledSigns').hide();
-		$('.hoverEventDisabledSigns').hide();			
+		$('.hoverEventDisabledSigns').hide();
 	}
 
 
@@ -788,7 +788,7 @@ function refreshOutput(input) {
 			JSONOutputString = 'Text1:' + JSON.stringify(formattedJObject[0]);
 			if (formattedJObject.length > 1) {
 				JSONOutputString += ',Text2:' + JSON.stringify(formattedJObject[1])
-			} 
+			}
 			if (formattedJObject.length > 2) {
 				JSONOutputString += ',Text3:' + JSON.stringify(formattedJObject[2])
 			}
@@ -877,7 +877,7 @@ function jsonParse() {
 				var clickEventType = "";
 				var clickEventValue = "";
 				$('#jsonPreview').append('<span id="jsonPreviewSpanElement'+ i +'"></span>');
-				
+
 				if (jobject[i].text) {
 					$('#jsonPreviewSpanElement'+i).html(jobject[i].text.replace(/\\\\n/g,'<br>').replace(/\\n/g,'<br>'));
 				} else if (jobject[i].score) {
@@ -1148,9 +1148,9 @@ localStorage.setItem('donateAlert','shown');
 		$('#previewcolor').val('617A80');
 	}
 	$('#previewcolor').css('background-color','#'+$('#previewcolor').val());
-	
+
 	jsonParse();
-	
+
 	if (localStorage['jobject'] != undefined) {
 		jobject = verify_jobject_format(JSON.parse(localStorage["jobject"]));
 		quill.setContents(build_quill_delta());
@@ -1165,7 +1165,7 @@ localStorage.setItem('donateAlert','shown');
 	} else {
 		$('#showNiceLookingOutput').prop('checked', true);
 	}
-	
+
 	showView('pageheader',true,false);
 	//JSON.stringify({"viewname":viewname,"suppressAnimation":suppressAnimation,"hideOthers":hideOthers,"hideMenubar":hideMenubar})
 	if (localStorage.getItem('jview') != undefined/* && typeof JSON.stringify(localStorage.getItem('jview')) != "string"*/) {
