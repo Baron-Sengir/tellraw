@@ -547,7 +547,7 @@ function build_jobject() {
 				}
 				if (atr.hoverEvent) {
 					var tagcontents = getSpecialTagItem(atr.hoverEvent);
-					newObj.clickEvent = {"action": tagcontents.action, "value": tagcontents.value}
+					newObj.hoverEvent = {"action": tagcontents.action, "value": tagcontents.value}
 				}
 			}
 
