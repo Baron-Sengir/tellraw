@@ -12,6 +12,7 @@ var notice = {
 		"type": "info"
 	}
 };
+var oldThisForSpecialHoverThing = undefined;
 var jobject = [];
 var selectedHover;
 var selectedClick;
@@ -1388,6 +1389,31 @@ localStorage.setItem('donateAlert','shown');
 			showView('tellraw');
 			reportAnIssue();
 		}
+	});
+	
+	$(document).on('click','clickevent,hoverevent',function(){
+		var samebtn = $(this)[0]==oldThisForSpecialHoverThing;
+		oldThisForSpecialHoverThing = $(this)[0];
+
+		var offset = $(this).offset();
+		
+		if (!samebtn) {
+			$('#editorThing').show();
+		} else {
+			$('#editorThing').toggle();
+		}
+		
+		var tagI = getSpecialTagItem($(this).attr('value'));
+		$('#editorThing').html(JSON.stringify(tagI));
+		$('#editorThing').css('font-family','menlo');
+		$('#editorThing').css('position','absolute');
+		$('#editorThing').css('top',offset.top);
+		$('#editorThing').css('left',offset.left-($('.container').css('padding-left').replace('px',''))-40);
+		$('#editorThing').css('background-color','black');
+		$('#editorThing').css('padding-left','4px');
+		$('#editorThing').css('padding-right','4px');
+		$('#editorThing').css('border-radius','3px');
+		$('#editorThing').css('z-index','9999');
 	});
 
 	//
