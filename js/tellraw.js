@@ -32,12 +32,15 @@ var bookPage = 1;
 var topPage = 1;
 var embed = false;
 var quill = undefined;
+var hasShownTagError = false;
 
 function getSpecialTagItem(tagid) {
 	if (localStorage.getItem('special_tag_' + tagid)) {
 		return JSON.parse(localStorage.getItem('special_tag_' + tagid));
-	} else {
+	} else if (!hasShownTagError) {
 		alert('An error occured fetching tagid ' + tagid);
+		var hasShownTagError = true;
+		location.reload();
 		return false;
 	}
 }
@@ -1241,8 +1244,8 @@ localStorage.setItem('donateAlert','shown');
 				localStorage.setItem('jtemplate',inpt['jtemplate'])
 			}
 			$('#command').val(inpt['command']);
-
 			swal("Imported", "Your command has been imported", "success");
+			quill.setContents(build_quill_delta());
 			refreshOutput();
 		})
 	});
