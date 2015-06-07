@@ -523,6 +523,9 @@ function build_quill_delta() {
 		return delta;
 	}
 }
+function force_quill_update() {
+	quill.setContents(build_quill_delta());
+}
 function build_jobject() {
 	jobject = [];
 	if (quill !== undefined) {
@@ -585,6 +588,14 @@ function refreshOutput(input) {
 	if ($('#command').val().indexOf('/tellraw') != -1 && templates[localStorage.getItem('jtemplate')].formatType != 'standardjson' && localStorage.getItem('dontShowQuoteFixer') != "true" && jobject.length > 0) {
 		setTimeout(showFixerView,4000);
 	}
+
+	if (jobject.length == 0) {
+		jobject[0] = {"text":"Oh no you don't, not right now!\n\nSpecifically, the IBC (International Browser Corp) prohibits empty, browser breaking, strings."};
+		force_quill_update();
+		refreshOutput();
+		return false;
+	}
+
 
 	refreshSavesList();
 
