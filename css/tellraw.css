@@ -239,7 +239,7 @@ body{
 	font-family: 'Noto Sans', sans-serif;
 }
 
-h1{
+h1.ribbon-h1{
 	width: 500px;
 	height: 100px;
 	position: fixed;
@@ -254,7 +254,7 @@ h1{
 	color: #aaa;
 }
 
-h2{
+h2.ribbon-h2{
 	width: 500px;
 	height: 100px;
 	position: fixed;
